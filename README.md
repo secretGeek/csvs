@@ -21,21 +21,39 @@ Changes from csvz to csvs:
 		must match this ABNF:
 
 
-A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.ietf.org/rfc/rfc4234.txt)) (not-verified currently)
+A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.ietf.org/rfc/rfc4234.txt)) (not complete currently, but can use https://tools.ietf.org/tools/bap/ for verifying)
 
-	csvs = TABLE-DELIMITER file-name TABLE-DELIMITER relative-path TABLE-DELIMITER csv-data *(TABLE-DELIMITER csv-data)
-		[TABLE-DELIMITER [ ( comment [TABLE-DELIMITER] ) / ( comment-file-name TABLE-DELIMITER comment [TABLE-DELIMITER] ) ]]
+	csvs = TABLE-DELIMITER
+			 file-name
+			 TABLE-DELIMITER
+			 relative-path
+			 TABLE-DELIMITER
+			 csv-data
+			 *(TABLE-DELIMITER csv-data)
+				[TABLE-DELIMITER [
+				 ( comment
+					 [TABLE-DELIMITER] )
+				 /
 
-	file-name = 		; similar to field with the escaping rules...
-									; but more limited, certain characters not allowed (hmm.. unify platforms?)
-									; Plus no "/" characters.
+				 ( comment-file-name
+					 TABLE-DELIMITER
+					 comment
+					 [TABLE-DELIMITER] )
+				]]
+	file-name = (unescaped-file-name / escaped-file-name)
+								; similar to field with the escaping rules...
+								; but more limited, certain characters not allowed (hmm.. unify platforms?)
+								; Plus no "/" characters.
 
-	relative-path = ; similar to field with the escaping rules...
-									; but more limited... certain characters not allowed.  (hmm.. unify platforms?)
-									; "/" characters allowed... different rules around dots e.g. no "../"
-									; no two "/" in a row.
-									; trailing "/" optional, and assumed in if it's not there.
-									; leading "/" optional, but assumed in if it's not there.
+
+
+	relative-path = (unescaped-path / escaped-path)
+								; similar to field with the escaping rules...
+								; but more limited... certain characters not allowed.  (hmm.. unify platforms?)
+								; "/" characters allowed... different rules around dots e.g. no "../"
+								; no two "/" in a row.
+								; trailing "/" optional, and assumed in if it's not there.
+								; leading "/" optional, but assumed in if it's not there.
 
 	comment = field
 
@@ -43,11 +61,11 @@ A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.iet
 
 	csv-data = [header ROW-DELIMITER] record *(ROW-DELIMITER record) [ROW-DELIMITER]
 
-	TABLE-DELIMITER = ; is there a maximum length? what range of character values?
+	TABLE-DELIMITER = "TD" ; is there a maximum length? what range of character values?
 
-  record = record = field *(FIELD-DELIMITER field)
+	record = field *(FIELD-DELIMITER field)
 
-	FIELD-DELIMITER = ; is there a maximum length? what range of character values?
+	FIELD-DELIMITER = "," ; is there a maximum length? what range of character values?
 
 	field = (escaped / non-escaped)
 
@@ -57,11 +75,33 @@ A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.iet
 
 	TEXTDATA =  %x20-21 / %x23-2B / %x2D-7E  ; this is not accurate
 
-In english.
+	ROW-DELIMITER = "NR"
 
-		start with a table delimiter. Anyone reading the file will, having read that first character (based on the encoding) know what the table delimiter is defined to be.
 
-		then a table name.
+Known issues above:
+
+- I hard coded TABLE-DELIMITER, FIELD-DELIMITER, ROW-DELIMITER  (as "TD"  "," and "NR" respectively) but need to do better.
+- TEXTDATA is restricted to ASCII, but this is not accurate.
+
+Currently missing above:
+
+- unescaped-file-name
+- escaped-file-name
+- unescaped-path
+- escaped-path
+- header
+- QUALIFIER
+
+
+In English.
+
+1. A csvs file starts with a table delimiter. A table delimiter is one character long (based on the encoding of the file, and after moving past a byte order mark if one is present.)
+
+1.1. Thus, anyone reading the file will, having read that first character, know what the table delimiter will be, and will recognise it when it is seen again.
+
+2. Next is a table name. A table name is either an unescaped-file-name or a qualifier, then an escaped-file-name, then a qualifier.
+
+
 		then table delimiter,
 		then a relative path,
 		then a table delimiter, then regular csv data.

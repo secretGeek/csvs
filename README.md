@@ -16,12 +16,12 @@ Changes from csvz to csvs:
 
 # `csvs-0`
 
-	To comply with `csvs-0` file:
+To comply with `csvs-0` file:
 
-		must match this ABNF:
+ - must match this ABNF:
 
 
-A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.ietf.org/rfc/rfc4234.txt)) (not complete currently, but can use https://tools.ietf.org/tools/bap/ for verifying)
+A `csvs` file has this format, expressed in ABNF [rfc4234](https://www.ietf.org/rfc/rfc4234.txt) (not complete currently, but can use https://tools.ietf.org/tools/bap/ for verifying)
 
 	csvs = TABLE-DELIMITER
 			 file-name
@@ -41,19 +41,19 @@ A `csvs` file has this format (expressed in [ABNF (rfc4234.txt)](https://www.iet
 					 [TABLE-DELIMITER] )
 				]]
 	file-name = (unescaped-file-name / escaped-file-name)
-								; similar to field with the escaping rules...
-								; but more limited, certain characters not allowed (hmm.. unify platforms?)
-								; Plus no "/" characters.
+		; similar to field with the escaping rules...
+		; but more limited, certain characters not allowed (hmm.. unify platforms?)
+		; Plus no "/" characters.
 
 
 
 	relative-path = (unescaped-path / escaped-path)
-								; similar to field with the escaping rules...
-								; but more limited... certain characters not allowed.  (hmm.. unify platforms?)
-								; "/" characters allowed... different rules around dots e.g. no "../"
-								; no two "/" in a row.
-								; trailing "/" optional, and assumed in if it's not there.
-								; leading "/" optional, but assumed in if it's not there.
+		; similar to field with the escaping rules...
+		; but more limited... certain characters not allowed.  (hmm.. unify platforms?)
+		; "/" characters allowed... different rules around dots e.g. no "../"
+		; no two "/" in a row.
+		; trailing "/" optional, and assumed in if it's not there.
+		; leading "/" optional, but assumed in if it's not there.
 
 	comment = field
 
